@@ -1,0 +1,32 @@
+@import "./components/typography";
+@import "./components/colors";
+
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  background: #D0D5DD;
+  font-family: 'Mulish', sans-serif;
+}
+
+#app {
+  max-width: 1200px;
+  padding: 20px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+h1, h2, h3, h4, p, ul {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+}
