@@ -19,13 +19,19 @@
       <p class="tender-item__amount">
         {{amount}}
       </p>
+      <button
+          class="tender-item__add-btn"
+          @click="addToFavorite(data)"
+      >
+        {{ isInFavorite ? '-' : '+' }}
+      </button>
     </div>
   </li>
 </template>
 
 <script setup>
 import {useFindStatusLabel} from "@/composables/useFindStatusLabel.js";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
 
 const props = defineProps({
@@ -52,6 +58,19 @@ const amount = computed(() => {
 
   return `${formattedAmount} ${currency}`
 })
+
+const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
+
+const isInFavorite = computed(() => favoritesList.value.find(item => item.tenderID === props.data.tenderID))
+
+const addToFavorite = (data) => {
+  const favoriteIds = JSON.parse(localStorage.getItem('favorites')) || [];
+  const idx = favoriteIds.findIndex(item => item.tenderID === data.tenderID);
+
+  idx >= 0 ? favoriteIds.splice(idx, 1) : favoriteIds.push(data);
+  favoritesList.value = favoriteIds
+  localStorage.setItem('favorites', JSON.stringify(favoritesList.value))
+}
 
 </script>
 
@@ -104,6 +123,17 @@ const amount = computed(() => {
     font-size: 14px;
     color: $gray-500;
     margin-bottom: 5px;
+  }
+
+  &__add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    line-height: 1;
+    margin-top: 10px;
   }
 }
 </style>
