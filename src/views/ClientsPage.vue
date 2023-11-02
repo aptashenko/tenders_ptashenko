@@ -5,6 +5,7 @@
           v-for="card of favoritesList"
           :in-work="tendersInWork"
           :item="card"
+          :class="{deactivated: main.isLoading}"
           @click="toggleToWork(card)"
       />
     </ul>
@@ -14,14 +15,21 @@
 <script setup>
 import {ref} from "vue";
 import ClientsDashboardCard from "@/components/pages/ClientsDashboard/ClientsDashboardCard.vue";
-
+import {useMainStore} from "@/stores/main-store.js";
 const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
-const tendersInWork = ref(JSON.parse(localStorage.getItem('in_work')) || [])
-const toggleToWork = (data) => {
-  const items = JSON.parse(localStorage.getItem('in_work')) || [];
-  const idx = items.findIndex(item => item.tenderID === data.tenderID);
-  idx >= 0 ? items.splice(idx, 1) : items.push(data);
-  tendersInWork.value = items
+const main = useMainStore();
+const tendersInWork = ref(JSON.parse(localStorage.getItem('in_work')) || []);
+const toggleToWork = async (data) => {
+  const idx = tendersInWork.value.findIndex(item => item.tenderID === data.tenderID);
+  if (idx >= 0) {
+    tendersInWork.value.splice(idx, 1)
+    localStorage.setItem('in_work', JSON.stringify(tendersInWork.value))
+    return
+  }
+
+  const resp = await main.getTenderDetails(data.tenderID)
+  tendersInWork.value.push(resp);
+
   localStorage.setItem('in_work', JSON.stringify(tendersInWork.value))
 }
 </script>
@@ -41,5 +49,7 @@ const toggleToWork = (data) => {
   gap: 5px;
 }
 
-
+.deactivated {
+  opacity: 0.1;
+}
 </style>

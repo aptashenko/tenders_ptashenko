@@ -1,6 +1,6 @@
 <template>
   <ul class="tenders-list">
-    <template v-if="!main.tendersLoading">
+    <template v-if="!main.isLoading">
       <slot v-if="tenders" />
     </template>
     <template v-else>
@@ -32,6 +32,13 @@ defineProps({
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  overflow: scroll;
+  max-height: calc(100vh - 263px);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .tenders-list__loader {

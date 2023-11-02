@@ -33,7 +33,8 @@
 import {useFindStatusLabel} from "@/composables/useFindStatusLabel.js";
 import {computed, ref} from "vue";
 import BaseButton from "@/components/ui/BaseButton.vue";
-
+import {useAmountFormat} from "@/composables/useAmountFormat.js";
+const { formatAmount } = useAmountFormat()
 const props = defineProps({
   data: {
     type: Object,
@@ -49,15 +50,7 @@ const buyersAdress = computed(() => {
   return `${region}, ${locality}`
 })
 
-const amount = computed(() => {
-  const {amount, currency} = props.data.value;
-  const formattedAmount = amount.toLocaleString('uk-UA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).replace('.', ',');
-
-  return `${formattedAmount} ${currency}`
-})
+const amount = computed(() => formatAmount(props.data.value.amount, props.data.value.currency))
 
 const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
 

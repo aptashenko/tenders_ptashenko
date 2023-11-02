@@ -7,17 +7,22 @@
       <ul class="header__list">
         <li class="header__item">
           <router-link to="/" class="header__link">
-            Home
+            Головна
           </router-link>
         </li>
         <li class="header__item">
           <router-link to="/clients" class="header__link">
-            Clients window
+            Для користувачів
           </router-link>
         </li>
         <li class="header__item">
           <router-link to="/staff" class="header__link">
-            Staff window
+            Для працівників
+          </router-link>
+        </li>
+        <li class="header__item">
+          <router-link to="/finance" class="header__link">
+            Фінанси
           </router-link>
         </li>
       </ul>

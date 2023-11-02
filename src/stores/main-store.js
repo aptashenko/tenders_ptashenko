@@ -1,14 +1,13 @@
 import { defineStore } from "pinia";
 import {ref} from "vue";
 import {API} from "@/api/index.js";
+import {useLoading} from "@/composables/useLoading.js";
 
 export const useMainStore = defineStore('MainStore', () => {
     const searchResults = ref(null)
-    const tendersLoading = ref(false)
-
-    console.log(tendersLoading.value)
+    const {isLoading, toggleLoading} = useLoading()
     const getSearchResults = async (query) => {
-        tendersLoading.value = true
+        toggleLoading()
 
         try {
             const { data, status } = await API.getTenders.tendersList(query)
@@ -20,13 +19,14 @@ export const useMainStore = defineStore('MainStore', () => {
         } catch(error) {
             console.log(error)
         } finally {
-            tendersLoading.value = false
+            toggleLoading()
         }
     }
 
     const getTenderDetails = async (id) => {
+        toggleLoading()
         try {
-            const { data, status } = await API.tenderDetails.detail(id)
+            const { data: {data}, status } = await API.tenderDetails.detail(id)
 
             if (status === 200) {
                 return data
@@ -34,12 +34,14 @@ export const useMainStore = defineStore('MainStore', () => {
 
         } catch(error) {
             console.log(error)
+        } finally {
+            toggleLoading()
         }
     }
 
     return {
         searchResults,
-        tendersLoading,
+        isLoading,
         getSearchResults,
         getTenderDetails
     }

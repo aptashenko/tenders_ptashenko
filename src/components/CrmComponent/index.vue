@@ -59,11 +59,11 @@
         >
           <div class="table__body-card">
             <div class="table__body-card-part">
-              <h2>
+              <h2 class="table__body-card-title">
                 {{item.title}}
               </h2>
               <p>
-                {{item.end_date}}
+                {{ setDateFormat(item.next_check, 'DD MMMM YYYY') || setDateFormat(item.date, 'DD MMMM YYYY')}}
               </p>
             </div>
             <div class="table__body-card-part">
@@ -71,16 +71,32 @@
                 Замовник: ТОВ ХХХХ
               </p>
               <p>
-                Вартість: 1 400 000,00
+                Вартість: {{ formatAmount(item.value.amount, item.value.currency) }}
               </p>
             </div>
-            <div class="table__body-card-part">
+            <div class="table__body-card-part-resp">
               <p>
-                ID: {{item.id}}
+                ID: {{item.tenderID}}
               </p>
-              <p>
-                Відповідальний: {{ personaName(item.resp_id) }}
-              </p>
+              <div class="table__body-card">
+                <p v-show="item.resp_id">
+                  Відповідальний: {{ personaName(item.resp_id) }}
+                </p>
+                <select
+                    v-show="!item.resp_id"
+                    class="table__body-card-resp-input"
+                    @click.stop
+                    @input="assignResp($event, item)"
+                >
+                  <option>Не назначено</option>
+                  <option
+                      v-for="resp of persona"
+                      :value="resp.id"
+                  >
+                    {{resp.name}}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
           <div v-show="openedIds.includes(item.id)" class="table__body-card-details">
@@ -113,7 +129,10 @@
 
 <script setup>
 import {computed, ref} from "vue";
-
+import {useDateFormat} from "@/composables/useDateFormat.js";
+import {useAmountFormat} from "@/composables/useAmountFormat.js";
+const {setDateFormat} = useDateFormat()
+const {formatAmount} = useAmountFormat()
 const persona = [
   {
     id: 1,
@@ -128,45 +147,43 @@ const persona = [
 const selectedUser = ref(0)
 
 const openedIds = ref([])
-
 const handleTodosOpen = (id) => {
   const idx = openedIds.value.findIndex(todo => todo === id)
   idx >= 0 ? openedIds.value.splice(idx, 1) : openedIds.value.push(id)
 }
 
-const tendersTodo = [
-  {
-    id: 'UA-2021-22-33-21-1',
-    title: 'Шини, диски',
-    end_date: '02.11.2023, 23:59',
-    resp_id: 1,
-  },
-  {
-    id: 'UA-2021-22-33-21-2',
-    title: 'Зерно',
-    end_date: '02.11.2023, 23:59',
-    resp_id: 2,
-  },
-  {
-    id: 'UA-2021-22-33-21-3',
-    title: 'Послуги з харчування',
-    end_date: '02.11.2023, 23:59',
-    resp_id: 2,
-  },
-];
+const assignResp = (event, tender) => {
+  const idx = tendersInWork.value.findIndex(item => item.tenderID === tender.tenderID);
+  if (idx !== -1) {
+    const id = Number(event.target.value);
+
+    tendersInWork.value.splice(idx, 1, {
+      ...tendersInWork.value[idx],
+      resp_id: id
+    });
+  }
+}
+
+const tendersInWork = computed(() => {
+  let tendersWithResp = JSON.parse(localStorage.getItem('in_work'));
+  if (tendersWithResp) {
+    tendersWithResp = tendersWithResp.map(tender => ({
+      ...tender,
+      resp_id: tender.resp_id || 0
+    }));
+  }
+
+  return tendersWithResp || [];
+})
 
 const selectUser = (id) => {
   selectedUser.value = id
 }
 
-const filteredTodos = computed(() => {
-  const value = tendersTodo.filter(item => item.resp_id === selectedUser.value)
-
-  return value.length ? value : tendersTodo
-})
+const filteredTodos = computed(() => selectedUser.value ? tendersInWork.value.filter(item => item.resp_id === selectedUser.value) : tendersInWork.value)
 
 const personaName = (id) => {
-  return persona.find(user => user.id === id).name
+  return persona.find(user => user.id === id)?.name
 }
 </script>
 
@@ -249,6 +266,29 @@ const personaName = (id) => {
 
       &-part {
         flex: 1;
+
+        &-resp {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+        }
+      }
+
+      &-resp {
+
+
+        &-input {
+          border: none;
+          width: 140px;
+        }
+      }
+
+      &-title {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 310px;
       }
 
       &-details {
