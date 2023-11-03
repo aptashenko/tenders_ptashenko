@@ -5,7 +5,7 @@
     </router-link>
     <nav class="header__nav">
       <ul class="header__list">
-        <li class="header__item">
+        <li class="header__item-ml">
           <router-link to="/" class="header__link">
             Головна
           </router-link>
@@ -21,8 +21,18 @@
           </router-link>
         </li>
         <li class="header__item">
+          <router-link to="/staff" class="header__link">
+            Аналіз тендерої документації
+          </router-link>
+        </li>
+        <li class="header__item">
           <router-link to="/finance" class="header__link">
             Фінанси
+          </router-link>
+        </li>
+        <li class="header__item-ml">
+          <router-link to="/profile" class="header__link">
+            Кабінет
           </router-link>
         </li>
       </ul>
@@ -54,6 +64,10 @@
     justify-content: flex-end;
 
     gap: 10px;
+  }
+
+  &__item-ml {
+    margin-left: auto;
   }
 }
 </style>

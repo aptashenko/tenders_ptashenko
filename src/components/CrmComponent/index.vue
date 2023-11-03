@@ -63,7 +63,7 @@
                 {{item.title}}
               </h2>
               <p>
-                {{ setDateFormat(item.next_check, 'DD MMMM YYYY') || setDateFormat(item.date, 'DD MMMM YYYY')}}
+                Кінцквий строк: {{ setDateFormat(item.next_check, 'DD MMMM YYYY') || setDateFormat(item.date, 'DD MMMM YYYY')}}
               </p>
             </div>
             <div class="table__body-card-part">
@@ -99,17 +99,17 @@
               </div>
             </div>
           </div>
-          <div v-show="openedIds.includes(item.id)" class="table__body-card-details">
+          <div v-show="openedIds.includes(item.id)" class="table__body-card-details" @click.stop>
             <div class="table__body-card-part">
-              <p>Вартість: 2500,00 грн</p>
-              <p>Витрати: 1000,00 грн</p>
+              <p>Вартість: {{formatAmount(item.payment, 'грн')}}</p>
+              <p>Витрати: {{formatAmount(1000, 'грн')}}</p>
             </div>
             <div class="table__body-card-part">
               <p>
-                Статус: Оплачено
+                Статус: {{item.is_paid ? 'Оплачено' : 'Не оплачено'}}
               </p>
               <p>
-                Статус: Очікує оплати
+                Статус: Не оплачено
               </p>
             </div>
             <div class="table__body-card-part">
@@ -156,25 +156,21 @@ const assignResp = (event, tender) => {
   const idx = tendersInWork.value.findIndex(item => item.tenderID === tender.tenderID);
   if (idx !== -1) {
     const id = Number(event.target.value);
+    const newArray = [...tendersInWork.value];
 
-    tendersInWork.value.splice(idx, 1, {
-      ...tendersInWork.value[idx],
+    newArray.splice(idx, 1, {
+      ...newArray[idx],
       resp_id: id
     });
+
+    tendersInWork.value = newArray
+    localStorage.setItem('in_work', JSON.stringify(tendersInWork.value))
   }
 }
 
-const tendersInWork = computed(() => {
-  let tendersWithResp = JSON.parse(localStorage.getItem('in_work'));
-  if (tendersWithResp) {
-    tendersWithResp = tendersWithResp.map(tender => ({
-      ...tender,
-      resp_id: tender.resp_id || 0
-    }));
-  }
 
-  return tendersWithResp || [];
-})
+
+const tendersInWork = ref(JSON.parse(localStorage.getItem('in_work')) || [])
 
 const selectUser = (id) => {
   selectedUser.value = id
