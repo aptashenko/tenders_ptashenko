@@ -47,10 +47,10 @@ const { statusLabel } = useFindStatusLabel(props.data.status)
 const buyersAdress = computed(() => {
   const { locality, region } = props.data.procuringEntity.address;
 
-  return `${region}, ${locality}`
+  return locality && region ? `${region}, ${locality}` : 'Не вказано'
 })
 
-const amount = computed(() => formatAmount(props.data.value.amount, props.data.value.currency))
+const amount = computed(() => props.data.value ? formatAmount(props.data.value.amount, props.data.value.currency) : 'Не визначено')
 
 const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
 

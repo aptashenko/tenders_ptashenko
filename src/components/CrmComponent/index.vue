@@ -147,6 +147,7 @@ const persona = [
 const selectedUser = ref(0)
 
 const openedIds = ref([])
+const staffPayments = ref(JSON.parse(localStorage.getItem('staff_payments')) || [])
 const handleTodosOpen = (id) => {
   const idx = openedIds.value.findIndex(todo => todo === id)
   idx >= 0 ? openedIds.value.splice(idx, 1) : openedIds.value.push(id)
@@ -154,9 +155,13 @@ const handleTodosOpen = (id) => {
 
 const assignResp = (event, tender) => {
   const idx = tendersInWork.value.findIndex(item => item.tenderID === tender.tenderID);
+
   if (idx !== -1) {
     const id = Number(event.target.value);
     const newArray = [...tendersInWork.value];
+
+    staffPayments.value.find(item => item.id === tender.tenderID).customer = Number(event.target.value)
+    localStorage.setItem('staff_payments', JSON.stringify(staffPayments.value))
 
     newArray.splice(idx, 1, {
       ...newArray[idx],

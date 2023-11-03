@@ -17,18 +17,30 @@ import {ref} from "vue";
 import ClientsDashboardCard from "@/components/pages/ClientsDashboard/ClientsDashboardCard.vue";
 import {useMainStore} from "@/stores/main-store.js";
 import {useDateFormat} from "@/composables/useDateFormat.js";
-import {useAmountFormat} from "@/composables/useAmountFormat.js";
-const {setDateFormat} = useDateFormat()
-const { formatAmount } = useAmountFormat()
-const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
+const {setDateFormat} = useDateFormat();
+
 const main = useMainStore();
+
+const favoritesList = ref(JSON.parse(localStorage.getItem('favorites')) || [])
 const tendersInWork = ref(JSON.parse(localStorage.getItem('in_work')) || []);
 const paymentsList = ref(JSON.parse(localStorage.getItem('payments')) || [])
+const staffPayments = ref(JSON.parse(localStorage.getItem('staff_payments')) || [])
 const checkPaymentCost = (amount) => {
   if (amount < 200000) return 1600
   else if (amount >= 200000 && amount <= 3000000) return 2900
   else return 6000
 }
+
+const persona = [
+  {
+    id: 1,
+    name: 'Артем П.'
+  },
+  {
+    id: 2,
+    name: 'Дарина Р.'
+  },
+]
 
 const setTenderToWork = (idx, data) => {
   if (idx !== -1) {
@@ -52,7 +64,9 @@ const setTenderToWork = (idx, data) => {
 const setPayment = (idx, payment) => {
   if (idx !== -1) {
     paymentsList.value.splice(idx, 1)
+    staffPayments.value.splice(idx, 1)
     localStorage.setItem('payments', JSON.stringify(paymentsList.value))
+    localStorage.setItem('staff_payments', JSON.stringify(staffPayments.value))
     return true
   } else {
     if (payment) {
@@ -60,13 +74,27 @@ const setPayment = (idx, payment) => {
         id: payment.id,
         tenderID: payment.tenderID,
         date: setDateFormat(new Date(), 'DD.MM.YYYY'),
-        amount: formatAmount(payment.payment, 'UAH'),
+        amount: payment.payment,
         customer: 'ТОВ ХХХ',
         category: 'Підготовка тендеру',
         comment: 'за тендер',
+        updated: setDateFormat(new Date(), 'DD.MM.YYYY'),
       }
+
+      const staffPayment = {
+        id: payment.tenderID,
+        date: setDateFormat(payment.next_check || payment.date, 'DD.MM.YYYY'),
+        amount: -700,
+        category: 'Підготовка тендеру',
+        customer: persona.find(item => item.id === payment.resp_id)?.name || 'none',
+        comment: `за тендер ${payment.tenderID}`,
+        is_paid: false
+      }
+
       paymentsList.value.push(paymentsInfo)
+      staffPayments.value.push(staffPayment)
       localStorage.setItem('payments', JSON.stringify(paymentsList.value))
+      localStorage.setItem('staff_payments', JSON.stringify(staffPayments.value))
 
       return true
     }

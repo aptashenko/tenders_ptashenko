@@ -1,11 +1,11 @@
 <template>
-  <div class="profile-page">
-    profile page
+  <div class="doc-analys-page">
+    Аналіз тендерої документації
   </div>
 </template>
 
 <style lang="scss">
-.profile-page {
+.doc-analys-page {
   min-height: calc(100vh - 157px);
   padding: 20px;
   background: #fff;

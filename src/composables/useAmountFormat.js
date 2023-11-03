@@ -8,7 +8,13 @@ export const useAmountFormat = () => {
         return `${amount} ${currency}`
     }
 
+    const unformatAmount = (value, currency) => {
+        const unformatValue = value.replace(` ${currency}`, '');
+        return Number(unformatValue)
+    }
+
     return {
-        formatAmount
+        formatAmount,
+        unformatAmount
     }
 }

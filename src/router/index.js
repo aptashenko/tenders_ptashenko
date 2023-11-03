@@ -24,9 +24,24 @@ const router = createRouter({
             component: () => import('@/views/ClientsPage.vue')
         },
         {
-            name: 'finance',
             path: '/finance',
-            component: () => import('@/views/FinancePage.vue')
+            children: [
+                {
+                    name: 'finance',
+                    path: '',
+                    component: () => import('@/views/FinancePage.vue'),
+                },
+                {
+                    name: 'stats',
+                    path: 'stats',
+                    component: () => import('@/components/pages/Finance/Statistic.vue'),
+                },
+            ]
+        },
+        {
+            name: 'analyse',
+            path: '/analyse',
+            component: () => import('@/views/DocAnalys.vue')
         },
         {
             name: 'profile',

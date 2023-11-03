@@ -1,11 +1,11 @@
 <template>
-  <div class="profile-page">
-    profile page
+  <div class="stats-page">
+    statistic
   </div>
 </template>
 
 <style lang="scss">
-.profile-page {
+.stats-page {
   min-height: calc(100vh - 157px);
   padding: 20px;
   background: #fff;

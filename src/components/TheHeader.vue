@@ -21,7 +21,7 @@
           </router-link>
         </li>
         <li class="header__item">
-          <router-link to="/staff" class="header__link">
+          <router-link to="/analyse" class="header__link">
             Аналіз тендерої документації
           </router-link>
         </li>
