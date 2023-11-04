@@ -69,7 +69,7 @@
                 style="width: 17%; max-width: 90px; font-size: 14px;"
             >
               <template #body="{data, field}">
-                {{field === 'amount' ? formatAmount(data[field], 'UAH') : (field === 'customer' ? persona.find(item => item.id === data[field]).name : data[field])}}
+                {{field === 'amount' ? formatAmount(data[field], 'UAH') : (field === 'customer' ? persona.find(item => item.id === data[field])?.name || 'none' : data[field])}}
               </template>
             </Column>
             <Column

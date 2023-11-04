@@ -5,40 +5,91 @@
     </router-link>
     <nav class="header__nav">
       <ul class="header__list">
-        <li class="header__item-ml">
-          <router-link to="/" class="header__link">
-            Головна
-          </router-link>
-        </li>
-        <li class="header__item">
-          <router-link to="/clients" class="header__link">
-            Для користувачів
-          </router-link>
-        </li>
-        <li class="header__item">
-          <router-link to="/staff" class="header__link">
-            Для працівників
-          </router-link>
-        </li>
-        <li class="header__item">
-          <router-link to="/analyse" class="header__link">
-            Аналіз тендерої документації
-          </router-link>
-        </li>
-        <li class="header__item">
-          <router-link to="/finance" class="header__link">
-            Фінанси
-          </router-link>
-        </li>
-        <li class="header__item-ml">
-          <router-link to="/profile" class="header__link">
-            Кабінет
-          </router-link>
+        <li
+            v-for="(link, idx) of headerLinks"
+            :class="[idx === 0 || idx === headerLinks.length - 1 ? 'header__item-ml' : 'header__item']"
+        >
+          <div
+              v-if="link.id === 'auth'"
+              class="header__auth-buttons"
+          >
+            <router-link
+                v-for="button of link.data"
+                :to="{name: button.name}"
+            >
+              {{button.label}}
+            </router-link>
+          </div>
+          <template v-else>
+            <router-link
+                v-show="link.show"
+                :to="{name: link.name}"
+                class="header__link"
+            >
+              {{ link.label }}
+            </router-link>
+          </template>
         </li>
       </ul>
     </nav>
   </header>
 </template>
+
+<script setup>
+import {computed, ref, toRef, watch} from "vue";
+import {useAuthStore} from "@/stores/auth-store.js";
+const authStore = useAuthStore();
+
+const links = ref([
+  {
+    name: 'home',
+    label: 'Головна',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    name: 'clients',
+    label: 'Для користувачів',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    name: 'staff',
+    label: 'Для працівників',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    name: 'analyse',
+    label: 'Аналіз тендерної документації',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    name: 'finance',
+    label: 'Фінанси',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    name: 'profile',
+    label: 'Особистий кабінет',
+    show: computed(() => authStore.isAuth),
+  },
+  {
+    id: 'auth',
+    show: computed(() => !authStore.isAuth),
+    data: [
+      {
+        name: 'sign-up',
+        label: 'Реєстрація',
+      },
+      {
+        name: 'login',
+        label: 'Вхід',
+      },
+    ]
+  }
+]);
+
+const headerLinks = computed(() => links.value.filter(link => link.show))
+
+</script>
 
 <style lang="scss">
 .header {
@@ -68,6 +119,12 @@
 
   &__item-ml {
     margin-left: auto;
+  }
+
+  &__auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 }
 </style>
